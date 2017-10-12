@@ -23,7 +23,7 @@ def car_pre_process(raw_data_path):
     df.safety = df.safety.map({'low': 0.0, 'med': 0.5, 'high': 1.0})
     df.cls = df.cls.map({'unacc': 0.0, 'acc': 0.3, 'good': 0.6, 'vgood': 0.9})
 
-    df.to_csv(output_path)
+    df.to_csv(output_path, index=False)
 
 
 def iris_pre_process(raw_data_path):
@@ -44,7 +44,7 @@ def iris_pre_process(raw_data_path):
     df.petal_wid = df.petal_wid.apply(lambda x: (x - petal_wid_mean) / petal_wid_std)
     df.cls = df.cls.map({'Iris-setosa': 0.0, 'Iris-versicolor': 0.5, 'Iris-virginica': 1.0})
 
-    df.to_csv(output_path)
+    df.to_csv(output_path, index=False)
 
 
 def adult_pre_process(raw_data_path):
@@ -110,7 +110,7 @@ def adult_pre_process(raw_data_path):
                                                 'Holand-Netherlands': 1.0 })
     df.cls = df.cls.apply(lambda x: x.replace('.', '') if isinstance(x, str) else x)
     df.cls = df.cls.map({ '<=50K': 0.0, '>50K': 1.0 })
-    df.to_csv(output_path)
+    df.to_csv(output_path, index=False)
 
 if 'car' in raw_data_path:
     car_pre_process(raw_data_path)
