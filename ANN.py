@@ -25,13 +25,15 @@ def ANN_Training(input, percent ,max, hid_num, neuron_num, learnrate):
     weightlist=[]
     biaslist=[]
     output_node=10#class 有几种，不会读。。。
-    while error is not 0 or iteration is not max:
+
+    train_input, test_input = percent_input(input, percent)#分离train和test
+    while error is not 0 or iteration is not max: #training
 
         if iteration==1:
-            outlist, weightlist , biaslist= forward1(pre_num, post_num, hid_num, input,output_node)
+            outlist, weightlist , biaslist= forward1(pre_num, post_num, hid_num, train_input,output_node)
             weightlist, biaslist=backward(learnrate, outlist, weightlist,biaslist, hid_num)
         else:
-            outlist=(pre_num, post_num, hid_num, input,weightlist,biaslist)
+            outlist=forward(pre_num, post_num, hid_num, input,weightlist,biaslist)
             weightlist,biaslist= backward(learnrate, outlist, weightlist, biaslist, hid_num)
         iteration=iteration+1
         outputlist=outlist[hid_num]
@@ -41,6 +43,49 @@ def ANN_Training(input, percent ,max, hid_num, neuron_num, learnrate):
             error=error+0.5*(targetlist[i]-output)^2
             i=i+1
         print('Total training error =  ' , error)
+
+
+    for input in test_input:#testing
+        outlist = forward(pre_num, post_num, hid_num, input, weightlist, biaslist)
+        #计算error
+        print('Total testing error =  ', error)
+
+
+
+def percent_input(input, percent):
+    '''
+    分离train 和test用的数据
+    :param input: 输入的数据
+    :param percent: 用来train的百分比
+    :return: train数据+test数据
+    '''
+    dictionary=dict()
+    total_num=0
+    train_input=[]
+    test_input=[]
+
+    for data in input:
+        dict[total_num]=data
+        total_num=total_num+1
+    train_num=total_num*percent
+    while train_num is not 0:
+        i = random.randint(0, total_num)
+        if dictionary.has_key(i):#has_key()错了?
+            train_input.append(dictionary.get(
+                i,0
+            ))
+            del dictionary[i]
+            train_num=train_num-1
+
+    for testdata in dictionary:
+        test_input.append(dictionary.get(testdata))
+
+    return train_input, test_input
+
+
+
+
+
 
 def forward1(pre_num1, post_num1 , hid_num, input, output_node):
     '''
