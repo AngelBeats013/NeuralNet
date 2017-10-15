@@ -10,16 +10,29 @@ def ANN_Training(input, percent ,max, hid_num, neuron_num, learnrate):
     hid_num: number of hidden layers
     neuron_num: number of neurons in each hidden layer
     '''
-
+    # file = open("sample.txt")
+    #
+    # while 1:
+    #     line = file.readline()
+    #     if not line:
+    #         break
+    #     pass  # do something
     error = 0
     iteration = 0
-    pre_num = 10
+    pre_num = 10#一共几个属性，不会读。。
     post_num = neuron_num
-    targetlist=[]#target 是啥
-
+    targetlist=[]#target 就是class有几种，列成list，是那种就把对应位置的数字写为1，剩下的都是0
+    weightlist=[]
+    biaslist=[]
+    output_node=10#class 有几种，不会读。。。
     while error is not 0 or iteration is not max:
-        outlist, weightlist , biaslist= forward(pre_num, post_num, hid_num, input)
-        weightlist=backward(learnrate, outlist, weightlist,biaslist, hid_num)
+
+        if iteration==1:
+            outlist, weightlist , biaslist= forward1(pre_num, post_num, hid_num, input,output_node)
+            weightlist, biaslist=backward(learnrate, outlist, weightlist,biaslist, hid_num)
+        else:
+            outlist=(pre_num, post_num, hid_num, input,weightlist,biaslist)
+            weightlist,biaslist= backward(learnrate, outlist, weightlist, biaslist, hid_num)
         iteration=iteration+1
         outputlist=outlist[hid_num]
         error=0
@@ -29,7 +42,7 @@ def ANN_Training(input, percent ,max, hid_num, neuron_num, learnrate):
             i=i+1
         print('Total training error =  ' , error)
 
-def forward(pre_num1, post_num1 , hid_num, input, output_node):
+def forward1(pre_num1, post_num1 , hid_num, input, output_node):
     '''
     给所有w随机赋值，计算net和sigmoid（）
     pre_num1: 本layer的节点数
@@ -46,7 +59,7 @@ def forward(pre_num1, post_num1 , hid_num, input, output_node):
     list1 = []
     wlist = []
     netlist=[]
-    input_list =   # input的x值
+    input_list = input  # input的x值
     outlist=[]#所有h（net（））
     biaslist=[]
 
@@ -54,7 +67,7 @@ def forward(pre_num1, post_num1 , hid_num, input, output_node):
         print('Layer %d (hidden Layer): ' % hidden_num)
         while post_num is not 0: #每个下个layer的xi寻找w，所有的list1存到wlist
             while pre_num is not 0: #一个xi对应的wi，存入list1
-                w = random.unidrom(1, 5)
+                w = random.randint(1, 5)
                 list1.append(w)
                 post_num = post_num-1
             wlist.append(list1)
@@ -63,10 +76,10 @@ def forward(pre_num1, post_num1 , hid_num, input, output_node):
             pre_num = pre_num-1
         weightlist.append(wlist)
         wlist.clear()
-        bias= random.unidrom(1, 5)#bias
+        bias= random.randint(1, 5)#bias
         biaslist.append(bias)
-        for wlist in weightlist:#算出所有的h（net（））存入netlist
-            netlist.append(cal_w_x(wlist, input_list, bias))
+        #算出所有的h（net（））存入netlist
+        netlist=(cal_w_x(wlist, input_list, bias))
         outlist.append(netlist)
         netlist.clear()
         input_list=netlist
@@ -78,7 +91,7 @@ def forward(pre_num1, post_num1 , hid_num, input, output_node):
     post_num=output_node
     while post_num is not 0:
         while pre_num is not 0:
-            w = random.unidrom(1, 5)
+            w = random.randint(1, 5)
             list1.append(w)
             post_num = post_num - 1
             wlist.append(list1)
@@ -87,7 +100,66 @@ def forward(pre_num1, post_num1 , hid_num, input, output_node):
             pre_num = pre_num - 1
         weightlist.append(wlist)
         wlist.clear()
-        bias = random.unidrom(1, 5)  # bias
+        bias = random.randint(1, 5)  # bias
+        biaslist.append(bias)
+       # 算出所有的h（net（））存入netlist
+        netlist=(cal_w_x(wlist, input_list, bias))
+        outlist.append(netlist)
+
+
+
+    return outlist, weightlist, biaslist
+
+
+def forward(pre_num1, post_num1 , hid_num, input, output_node,weightlist,biaslist):
+    '''
+   利用上一次的bias和weight，计算net和sigmoid（）
+    pre_num1: 本layer的节点数
+    post_num1: 下一个layer节点数
+    hid_num: hidden layer数
+    input： input数据
+    output_node: 最后output几个节点
+    :return: outlist（所有h（）和output）, weightlist(所有w)
+    '''
+    pre_num = pre_num1
+    post_num = post_num1
+    hidden_num = hid_num
+    weightlist=[]
+    list1 = []
+    wlist = []
+    netlist=[]
+    input_list = input  # input的x值
+    outlist=[]#所有h（net（））
+    biaslist=[]
+
+    while hidden_num is not 0:
+        print('Layer %d (hidden Layer): ' % hidden_num)
+
+        bias=biaslist[hidden_num-1]
+        wlist=weightlist[hidden_num-1]
+        #算出所有的h（net（））存入netlist
+        netlist=(cal_w_x(wlist, input_list, bias))
+        outlist.append(netlist)
+        netlist.clear()
+        input_list=netlist
+
+        hidden_num = hidden_num - 1
+        pre_num=post_num
+
+    print('Layer %d (output Layer): ' % hid_num+1)
+    post_num=output_node
+    while post_num is not 0:
+        while pre_num is not 0:
+            w = random.randint(1, 5)
+            list1.append(w)
+            post_num = post_num - 1
+            wlist.append(list1)
+            print('Neuron %d weights:' % pre_num1 - pre_num + 1, list1)
+            list1.clear()
+            pre_num = pre_num - 1
+        weightlist.append(wlist)
+        wlist.clear()
+        bias = random.randint(1, 5)  # bias
         biaslist.append(bias)
         for wlist in weightlist:  # 算出所有的h（net（））存入netlist
             netlist.append(cal_w_x(wlist, input_list, bias))
@@ -96,6 +168,7 @@ def forward(pre_num1, post_num1 , hid_num, input, output_node):
 
 
     return outlist, weightlist, biaslist
+
 
 def cal_w_x(wlist , input_list, bias):
     '''
@@ -135,7 +208,7 @@ def backward(learnrate, outlist, weightlist, biaslist, hid_num):
         if i is hid_num:
             netlist= outlist[i]
             xlist=outlist[i-1]
-            targetlist=#target 咋算啊
+            targetlist=#target 还是最后一行。。。
             j = 0
             for list in wlist:
                 k=0
@@ -167,7 +240,7 @@ def backward(learnrate, outlist, weightlist, biaslist, hid_num):
                 bias = bias + delta_bias
                 j = j + 1
         i=i-1
-        return weightlist
+        return weightlist, biaslist
 
 
 
