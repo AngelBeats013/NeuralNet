@@ -17,16 +17,74 @@ def ANN_Training():
     neuron_num_list=[2]
     target_output=[1,0]
 
-    error=1
+    error=1.00
     iteration=0
     train_input=input
 
-    while error is not 0 or iteration is not max:
-        if iteration==0:
-            outlist,weightlist,biaslist= forward1(len(train_input), neuron_num_list, hid_num, train_input,len(target_output))
+    # while error is not 0 or iteration is not max:
+    if iteration==0:
+
+            iteration_wlist=random_w(len(input),neuron_num_list, len(target_output), hid_num)
+            # outlist,weightlist,biaslist= forward1(len(train_input), neuron_num_list, hid_num, train_input,len(target_output))
+
+def random_w(input_neuron, layer_neuron_list, output_num,hid_num1):
+    pre_layer_neuron = input_neuron
+    hid_num = hid_num1
 
 
-def forward1(input_neuron,layer_neuron_list,hid_num1,input,output_num):
+    iteration_wlist = []
+
+    # hidden layer
+    while hid_num is not 0:
+
+        layer_neuron=layer_neuron_list[hid_num1-hid_num]
+        layer_neuron_count=layer_neuron
+
+
+
+        layer_wlist = []
+        while layer_neuron_count is not 0: #每个下个layer的xi寻找w，所有的list1存到wlist
+            pre_layer_neuron_count = pre_layer_neuron
+            bias = random.randint(1, 5)
+            neuron_wlist = [bias]
+            while pre_layer_neuron_count is not 0: #一个xi对应的wi，存入list1
+
+                w = random.randint(1, 5)
+                neuron_wlist.append(w)
+                pre_layer_neuron_count = pre_layer_neuron_count-1
+            layer_wlist.append(neuron_wlist)
+
+            layer_neuron_count = layer_neuron_count-1
+        iteration_wlist.append(layer_wlist)
+        hid_num = hid_num - 1
+        pre_layer_neuron=layer_neuron
+
+    #output layer
+
+    layer_wlist=[]
+
+    layer_neuron = output_num
+    layer_neuron_count = layer_neuron
+    while layer_neuron_count is not 0:
+
+        pre_layer_neuron_count=pre_layer_neuron
+        bias = random.randint(1, 5)
+        neuron_wlist = [bias]
+        while pre_layer_neuron_count is not 0:
+
+            w = random.randint(1, 5)
+            neuron_wlist.append(w)
+            pre_layer_neuron_count = pre_layer_neuron_count - 1
+        layer_wlist.append(neuron_wlist)
+        layer_neuron_count = layer_neuron_count - 1
+
+    iteration_wlist.append(layer_wlist)
+    print(iteration_wlist)
+
+    return iteration_wlist
+
+
+def forward(input_neuron,layer_neuron_list,hid_num1,input,output_num):
     '''
     给所有w随机赋值，计算net和sigmoid（）
     pre_num1: 本layer的节点数
@@ -49,14 +107,6 @@ def forward1(input_neuron,layer_neuron_list,hid_num1,input,output_num):
     layer_input=input
 
 
-
-    weightlist=[]
-    list1 = []
-    wlist = []
-    netlist=[]
-    input_list = input  # input的x值
-    outlist=[]#所有h（net（））
-    biaslist=[]
 
     while hid_num is not 0:
         if hid_num==hid_num1:
