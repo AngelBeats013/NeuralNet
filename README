@@ -1,11 +1,16 @@
-1.
-enter script parameters in command line:
-                          adult(input dataset )
-                          80(input dataset )
-                          200(maximum_iterations )
-                          0.2(learning rate)
-                          2(maximum_iterations )
-                          4(number of neurons in each hidden layer)
-                          2
-2.run main.py
-3.report of every dataset will be stored in each dataset's folder.
+Run main.py script with parameters in command line:
+    'car' or 'iris' or 'adult' (dataset)
+    80 (int, percent of training data)
+    200 (int, maximum iterations )
+    0.2 (float, learning rate)
+    2 (int, number of hidden layers )
+    4 (int, number of neurons in first hidden layer)
+    2 （int, number of neurons in second hidden layer)
+
+For example, run 'python3 main.py car 80 200 0.2 2 4 2'
+
+Python version: 3
+Dependencies:
+    Pandas
+    Numpy
+
