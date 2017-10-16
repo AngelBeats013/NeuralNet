@@ -62,7 +62,7 @@ train_data = df[msk]
 test_data = df[~msk]
 if extra_test_data_path is not None:
     df_test = pd.read_csv(extra_test_data_path)
-    test_data = pd.concat(test_data, df_test)
+    test_data = pd.concat([test_data, df_test])
 train_data.reindex()
 test_data.reindex()
 
