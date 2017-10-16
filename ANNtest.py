@@ -18,8 +18,9 @@ def ANN_Training():
     hid_num=1
     neuron_num_list=[2]
     target_output=[1]
+
     neuron_num_list.append(len(target_output))
-    print(neuron_num_list)
+    learnrate = 0.9
 
     error=1.00
     iteration=0
@@ -30,6 +31,8 @@ def ANN_Training():
 
             iteration_wlist=random_w(len(input),neuron_num_list, len(target_output), hid_num)
             iteration_outlist=forward(len(input),neuron_num_list, len(target_output), hid_num,input,wlist)
+            iteration_wlist=backward(learnrate,iteration_outlist,input,wlist,hid_num,1)
+
 
 def random_w(input_neuron, layer_neuron_list, output_num,hid_num1):
     pre_layer_neuron = input_neuron
@@ -49,11 +52,11 @@ def random_w(input_neuron, layer_neuron_list, output_num,hid_num1):
         layer_wlist = []
         while layer_neuron_count is not 0: #每个下个layer的xi寻找w，所有的list1存到wlist
             pre_layer_neuron_count = pre_layer_neuron
-            bias = random.randint(1, 5)
+            bias = random.uniform(1, 5)
             neuron_wlist = [bias]
             while pre_layer_neuron_count is not 0: #一个xi对应的wi，存入list1
 
-                w = random.randint(1, 5)
+                w = random.uniform(1, 5)
                 neuron_wlist.append(w)
                 pre_layer_neuron_count = pre_layer_neuron_count-1
             layer_wlist.append(neuron_wlist)
@@ -72,11 +75,11 @@ def random_w(input_neuron, layer_neuron_list, output_num,hid_num1):
     while layer_neuron_count is not 0:
 
         pre_layer_neuron_count=pre_layer_neuron
-        bias = random.randint(1, 5)
+        bias = random.uniform(1, 5)
         neuron_wlist = [bias]
         while pre_layer_neuron_count is not 0:
 
-            w = random.randint(1, 5)
+            w = random.uniform(1, 5)
             neuron_wlist.append(w)
             pre_layer_neuron_count = pre_layer_neuron_count - 1
         layer_wlist.append(neuron_wlist)
@@ -86,7 +89,6 @@ def random_w(input_neuron, layer_neuron_list, output_num,hid_num1):
     print(iteration_wlist)
 
     return iteration_wlist
-
 
 def forward(input_neuron,layer_neuron_list,output_num,hid_num1,input,iteration_wlist):
     '''
@@ -141,9 +143,69 @@ def forward(input_neuron,layer_neuron_list,output_num,hid_num1,input,iteration_w
         print(iteration_outlist)
     return iteration_outlist
 
-
-
 def sigmoid(netsum):
     e = 2.718
     result=1/(e**(-netsum)+1)
     return result
+
+def backward(learnrate, iteration_outlist, input_list,iteration_wlist, hid_num, target):
+    i=0
+    total_out_num=len(iteration_outlist)
+    while i is not total_out_num:
+        if i==total_out_num-1:
+            layer_outlist = iteration_outlist[total_out_num-1]
+            layer_wlist = iteration_wlist[total_out_num-1]
+            pre_layer_outlist = input_list
+            j = 0
+            for neuron_wlist in layer_wlist:
+                neuron_output = layer_outlist[j]
+                delta = learnrate  * (1 - neuron_output) * neuron_output
+                k = 0
+                for weight in neuron_wlist:
+                    x = pre_layer_outlist[k]
+                    weight = weight + delta * x
+                    print('delta3', delta , x)
+                j = j + 1
+        if i==0:
+            layer_outlist=iteration_outlist[total_out_num-1]
+            layer_wlist=iteration_wlist[total_out_num-1]
+            pre_layer_outlist=iteration_outlist[total_out_num-2]
+
+            j=0
+            for neuron_wlist in layer_wlist:
+                neuron_output=layer_outlist[j]
+                delta=(target-neuron_output)*(1-neuron_output)*neuron_output
+                k=0
+                print("nwl", neuron_wlist)
+                for weight in neuron_wlist:
+                    if k==0:
+                        x=1
+
+                    else:
+                        x=pre_layer_outlist[k-1]
+                    weight=weight+delta*x*learnrate
+                    print('delta1', learnrate*delta *x,delta,x)
+                    k=k+1
+                j=j+1
+        else:
+            layer_outlist = iteration_outlist[total_out_num - 1]
+            layer_wlist = iteration_wlist[total_out_num - 1]
+            pre_layer_outlist = iteration_outlist[total_out_num - 2]
+            j = 0
+            for neuron_wlist in layer_wlist:
+                neuron_output = layer_outlist[j]
+                delta = learnrate *  (1 - neuron_output) * neuron_output
+                k = 0
+                for weight in neuron_wlist:
+                    x = pre_layer_outlist[k]
+                    weight = weight + delta * x
+                    print('delta2',delta * x)
+                    k=k+1
+                j = j + 1
+        i=i+1
+        total_out_num=total_out_num-1
+
+    return iteration_wlist
+
+
+
