@@ -1,5 +1,6 @@
 import random
 
+
 class ANN:
     def __init__(self, max_iter, learning_rate, hidden_layer_num, neuron_num):
         '''
@@ -15,7 +16,6 @@ class ANN:
         self.neuron_num = neuron_num
         self.weights_dict = dict()
 
-
     def train(self, train_data):
         '''
         Train an ANN using given data set and parameters
@@ -24,9 +24,9 @@ class ANN:
         print('\nTraining data size: %s' % len(train_data))
 
         # Add input and output layer neuron_num list
-        input_layer = [len(train_data.columns)-1]
+        input_layer = [len(train_data.columns) - 1]
         self.neuron_num = input_layer + self.neuron_num
-        output_num = 1 # Only one output value is needed
+        output_num = 1  # Only one output value is needed
         self.neuron_num.append(output_num)
 
         # Run back propagation algorithm
@@ -50,7 +50,7 @@ class ANN:
                 next_layer += 1
             for instance in train_data.itertuples():
                 instance = list(instance)
-                instance.pop(0) # First value is index, which is not needed
+                instance.pop(0)  # First value is index, which is not needed
                 target = instance.pop()  # Last value is target value
                 out_values = self.forward(instance)
                 self.backward(instance, target, out_values)
@@ -70,7 +70,6 @@ class ANN:
 
         print('Training complete. Accuracy: %s%%' % ((1.0 - error) * 100))
 
-
     def test(self, test_data):
         '''
         Test this ANN against test data and print test report
@@ -86,7 +85,6 @@ class ANN:
             error += (target - out_values[len(out_values) - 1][0]) ** 2
         error = error / len(test_data)
         print('Test accuracy: %s%%' % ((1.0 - error) * 100))
-
 
     def forward(self, instance):
         '''
@@ -119,7 +117,7 @@ class ANN:
 
     def backward(self, instance, target, out_values):
         # Calc delta for each node
-        out_layer = len(self.neuron_num)-1
+        out_layer = len(self.neuron_num) - 1
         delta_dict = dict()
 
         # First calculate output layer deltas
@@ -129,14 +127,14 @@ class ANN:
             delta_dict[out_layer][i] = output * (1 - output) * (target - output)
 
         # Then hidden layer deltas, need to exclude input layer
-        cur_layer = len(self.neuron_num)-2
+        cur_layer = len(self.neuron_num) - 2
         while cur_layer > 0:
             delta_dict[cur_layer] = dict()
             for i in range(self.neuron_num[cur_layer]):
                 # Calc downstream deltas
                 downstream = 0.0
-                for j in range(self.neuron_num[cur_layer+1]):
-                    downstream += delta_dict[cur_layer+1][j] * self.weights_dict[cur_layer][i][j]
+                for j in range(self.neuron_num[cur_layer + 1]):
+                    downstream += delta_dict[cur_layer + 1][j] * self.weights_dict[cur_layer][i][j]
                 output = out_values[cur_layer][i]
                 delta_dict[cur_layer][i] = output * (1 - output) * downstream
             cur_layer -= 1
@@ -145,11 +143,27 @@ class ANN:
         cur_layer = len(self.neuron_num) - 2
         while cur_layer >= 0:
             for i in range(self.neuron_num[cur_layer]):
-                for j in range(self.neuron_num[cur_layer+1]):
-                    self.weights_dict[cur_layer][i][j] += self.learning_rate * delta_dict[cur_layer+1][j] * out_values[cur_layer][i]
+                for j in range(self.neuron_num[cur_layer + 1]):
+                    self.weights_dict[cur_layer][i][j] += self.learning_rate * delta_dict[cur_layer + 1][j] * \
+                                                          out_values[cur_layer][i]
             cur_layer -= 1
 
     def sigmoid(self, x):
         e = 2.718
-        result=1/(e ** (-x) + 1)
+        result = 1 / (e ** (-x) + 1)
         return result
+
+    def print(self):
+        for layer_index in self.weights_dict:
+            if layer_index == 0:
+                print('Layer 0 (Input Layer):')
+            elif layer_index == len(self.weights_dict):
+                print('Layer %s(Last Hidden Layer):' % layer_index)
+            else:
+                print('Layer %s( Hidden Layer):' % layer_index)
+            layer_weight_list = self.weights_dict[layer_index]
+            for neuron_index, layer_weight_key in enumerate(layer_weight_list):
+                    print('Neuron %s weights:' % neuron_index)
+                    neuron_weight_list = layer_weight_list[layer_weight_key]
+                    for neuron_weight_key in neuron_weight_list:
+                        print(round(neuron_weight_key, 3))
