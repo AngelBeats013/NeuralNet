@@ -1,0 +1,11 @@
+1.
+enter script parameters in command line:
+                          adult(input dataset )
+                          80(input dataset )
+                          200(maximum_iterations )
+                          0.2(learning rate)
+                          2(maximum_iterations )
+                          4(number of neurons in each hidden layer)
+                          2
+2.run main.py
+3.report of every dataset will be stored in each dataset's folder.
