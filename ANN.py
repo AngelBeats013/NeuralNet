@@ -52,7 +52,6 @@ class ANN:
                 instance = list(instance)
                 instance.pop(0) # First value is index, which is not needed
                 target = instance.pop()  # Last value is target value
-
                 out_values = self.forward(instance)
                 self.backward(instance, target, out_values)
 
@@ -62,8 +61,10 @@ class ANN:
                 instance = list(instance)
                 instance.pop(0)  # First value is index, which is not needed
                 target = instance.pop()  # Last value is target value
+                out_values = self.forward(instance)
                 error += ((target - out_values[len(out_values) - 1][0]) ** 2)
-            print('%s iteration, error rate: %s%%' % (iter_num, error * 100 / len(train_data)))
+            error = error / len(train_data)
+            print('%s iteration, error rate: %s%%' % (iter_num, error * 100))
             if error == 0.0:
                 break
 
@@ -76,13 +77,15 @@ class ANN:
         :param test_data: test data in pandas DataFrame
         '''
         print('\nTesting data size: %s' % len(test_data))
-        # error = 0.0
-        # for instance in test_data.itertuples():
-        #     instance = list(instance)
-        #     instance.pop(0)  # First value is index, which is not needed
-        #     target = instance.pop()  # Last value is target value
-        #     error += 0.5 * ((target - out_values[len(out_values) - 1][0]) ** 2)
-        pass
+        error = 0.0
+        for instance in test_data.itertuples():
+            instance = list(instance)
+            instance.pop(0)  # First value is index, which is not needed
+            target = instance.pop()  # Last value is target value
+            out_values = self.forward(instance)
+            error += (target - out_values[len(out_values) - 1][0]) ** 2
+        error = error / len(test_data)
+        print('Test accuracy: %s%%' % ((1.0 - error) * 100))
 
 
     def forward(self, instance):
