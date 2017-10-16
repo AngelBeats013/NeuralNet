@@ -29,88 +29,61 @@ class ANN:
         output_num = 1 # Only one output value is needed
         self.neuron_num.append(output_num)
 
-        # Randomly generate weights
-        cur_layer = 0
-        next_layer = 1
-        while next_layer < len(self.neuron_num):
-            # Calculate weights for each layer
-            for cur_neuron in range(self.neuron_num[cur_layer]+1): # plus 1 for bias weight
-                # Calculate weights for each neuron in current layer
-                neuron_weights = []
-                for _ in range(self.neuron_num[next_layer]):
-                    neuron_weights.append(random.uniform(-1.0, 1.0))
-                # Add weights of this neuron to dict
-                if cur_layer not in self.weights_dict:
-                    self.weights_dict[cur_layer] = dict()
-                self.weights_dict[cur_layer][cur_neuron] = neuron_weights
-            cur_layer += 1
-            next_layer += 1
-
         # Run back propagation algorithm
-        error = 1.0
-        for _ in range(self.max_iter):
-            if error == 0.0:
-                break
+        error = 0.0
+        for iter_num in range(self.max_iter):
+            # Randomly generate weights
+            cur_layer = 0
+            next_layer = 1
+            while next_layer < len(self.neuron_num):
+                # Calculate weights for each layer
+                for cur_neuron in range(self.neuron_num[cur_layer] + 1):  # plus 1 for bias weight
+                    # Calculate weights for each neuron in current layer
+                    neuron_weights = []
+                    for _ in range(self.neuron_num[next_layer]):
+                        neuron_weights.append(random.uniform(-1.0, 1.0))
+                    # Add weights of this neuron to dict
+                    if cur_layer not in self.weights_dict:
+                        self.weights_dict[cur_layer] = dict()
+                    self.weights_dict[cur_layer][cur_neuron] = neuron_weights
+                cur_layer += 1
+                next_layer += 1
             for instance in train_data.itertuples():
                 instance = list(instance)
                 instance.pop(0) # First value is index, which is not needed
-                self.bp(instance)
+                target = instance.pop()  # Last value is target value
+
+                out_values = self.forward(instance)
+                self.backward(instance, target, out_values)
+
+            # Calc MSE
+            error = 0.0
+            for instance in train_data.itertuples():
+                instance = list(instance)
+                instance.pop(0)  # First value is index, which is not needed
+                target = instance.pop()  # Last value is target value
+                error += ((target - out_values[len(out_values) - 1][0]) ** 2)
+            print('%s iteration, error rate: %s%%' % (iter_num, error * 100 / len(train_data)))
+            if error == 0.0:
                 break
-            break
 
+        print('Training complete. Accuracy: %s%%' % ((1.0 - error) * 100))
 
-        # error = 0
-        # iteration = 0
-        # pre_num = 10#一共几个属性，不会读。。
-        # post_num = neuron_num
-        # targetlist=[]#target 就是class有几种，列成list，是那种就把对应位置的数字写为1，剩下的都是0
-        # weightlist=[]
-        # biaslist=[]
-        # output_node=10#class 有几种，不会读。。。
-        #
-        # train_input, test_input = percent_input(data_file_path, train_percent)#分离train和test
-        # while error is not 0 or iteration is not max_iter: #training
-        #
-        #     if iteration==1:
-        #         outlist, weightlist , biaslist= forward1(pre_num, post_num, hidden_layer_num, train_input, output_node)
-        #         weightlist, biaslist=backward(learning_rate, outlist, weightlist, biaslist, hidden_layer_num)
-        #     else:
-        #         outlist=forward(pre_num, post_num, hidden_layer_num, data_file_path, weightlist, biaslist)
-        #         weightlist,biaslist= backward(learning_rate, outlist, weightlist, biaslist, hidden_layer_num)
-        #     iteration=iteration+1
-        #     outputlist=outlist[hidden_layer_num]
-        #     error=0
-        #     i=0
-        #     for output in outputlist:
-        #         error=error+0.5*(targetlist[i]-output)^2
-        #         i=i+1
-        #     print('Total training error =  ' , error)
-        #
-        #
-        # for data_file_path in test_input:#testing
-        #     outlist = forward(pre_num, post_num, hidden_layer_num, data_file_path, weightlist, biaslist)
-        #     #计算error
-        #     print('Total testing error =  ', error)
 
     def test(self, test_data):
         '''
         Test this ANN against test data and print test report
         :param test_data: test data in pandas DataFrame
         '''
-        # print('Testing data size: %s' % len(test_data))
+        print('\nTesting data size: %s' % len(test_data))
+        # error = 0.0
+        # for instance in test_data.itertuples():
+        #     instance = list(instance)
+        #     instance.pop(0)  # First value is index, which is not needed
+        #     target = instance.pop()  # Last value is target value
+        #     error += 0.5 * ((target - out_values[len(out_values) - 1][0]) ** 2)
         pass
 
-    def bp(self, instance):
-        '''
-        Run back propagation on given data instance and update weights
-        :param instance: data instance
-        '''
-        target = instance.pop()  # Last value is target value
-        out_values = self.forward(instance)
-
-        # Backward pass
-        self.backward(instance, target, out_values)
-        pass
 
     def forward(self, instance):
         '''
@@ -164,11 +137,15 @@ class ANN:
                 output = out_values[cur_layer][i]
                 delta_dict[cur_layer][i] = output * (1 - output) * downstream
             cur_layer -= 1
-        print(delta_dict)
 
-        # Update weights
+        # Update weights, start from back
+        cur_layer = len(self.neuron_num) - 2
+        while cur_layer >= 0:
+            for i in range(self.neuron_num[cur_layer]):
+                for j in range(self.neuron_num[cur_layer+1]):
+                    self.weights_dict[cur_layer][i][j] += self.learning_rate * delta_dict[cur_layer+1][j] * out_values[cur_layer][i]
+            cur_layer -= 1
 
-        pass
 
     def forward1(self, pre_num1, post_num1 , hid_num, input, output_node):
         '''
