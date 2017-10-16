@@ -1,0 +1,8 @@
+CAR_DATA_PATH = 'data_sets/car/car.data.txt'
+CAR_DATA_PROCESSED_PATH = 'data_sets/car/car.data.processed.txt'
+IRIS_DATA_PATH = 'data_sets/iris/iris.data.txt'
+IRIS_DATA_PROCESSED_PATH = 'data_sets/iris/iris.data.processed.txt'
+ADULT_DATA_PATH = 'data_sets/adult/adult.data.txt'
+ADULT_DATA_PROCESSED_PATH = 'data_sets/adult/adult.data.processed.txt'
+ADULT_TEST_DATA_PATH = 'data_sets/adult/adult.test.txt'
+ADULT_TEST_DATA_PROCESSED_PATH = 'data_sets/adult/adult.test.processed.txt'

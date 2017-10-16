@@ -1,15 +1,8 @@
-CAR_DATA_PATH = 'data_sets/car/car.data.txt'
-CAR_DATA_PROCESSED_PATH = 'data_sets/car/car.data.processed.txt'
-IRIS_DATA_PATH = 'data_sets/iris/iris.data.txt'
-IRIS_DATA_PROCESSED_PATH = 'data_sets/iris/iris.data.processed.txt'
-ADULT_DATA_PATH = 'data_sets/adult/adult.data.txt'
-ADULT_DATA_PROCESSED_PATH = 'data_sets/adult/adult.data.processed.txt'
-ADULT_TEST_DATA_PATH = 'data_sets/adult/adult.test.txt'
-ADULT_TEST_DATA_PROCESSED_PATH = 'data_sets/adult/adult.test.processed.txt'
+import path
 
 def car_pre_process():
     import pandas as pd
-    df = pd.read_csv(CAR_DATA_PATH, header=None)
+    df = pd.read_csv(path.CAR_DATA_PATH, header=None)
     df.columns = ['buy', 'maint', 'doors', 'persons', 'lug_boot', 'safety', 'cls']
 
     df.buy = df.buy.map({'vhigh': 0.0, 'high': 0.3, 'med': 0.6, 'low': 0.9})
@@ -20,12 +13,12 @@ def car_pre_process():
     df.safety = df.safety.map({'low': 0.0, 'med': 0.5, 'high': 1.0})
     df.cls = df.cls.map({'unacc': 0.0, 'acc': 0.3, 'good': 0.6, 'vgood': 0.9})
 
-    df.to_csv(CAR_DATA_PROCESSED_PATH, index=False)
+    df.to_csv(path.CAR_DATA_PROCESSED_PATH, index=False)
 
 
 def iris_pre_process():
     import pandas as pd
-    df = pd.read_csv(IRIS_DATA_PATH, header=None)
+    df = pd.read_csv(path.IRIS_DATA_PATH, header=None)
     df.columns = ['sepal_len', 'sepal_wid', 'petal_len', 'petal_wid', 'cls']
     sepal_len_mean = df.sepal_len.mean()
     sepal_wid_mean = df.sepal_wid.mean()
@@ -42,12 +35,12 @@ def iris_pre_process():
     df.petal_wid = df.petal_wid.apply(lambda x: (x - petal_wid_mean) / petal_wid_std)
     df.cls = df.cls.map({'Iris-setosa': 0.0, 'Iris-versicolor': 0.5, 'Iris-virginica': 1.0})
 
-    df.to_csv(IRIS_DATA_PROCESSED_PATH, index=False)
+    df.to_csv(path.IRIS_DATA_PROCESSED_PATH, index=False)
 
 
 def adult_pre_process():
-    adult_pre_process_helper(ADULT_DATA_PATH, ADULT_DATA_PROCESSED_PATH)
-    adult_pre_process_helper(ADULT_TEST_DATA_PATH, ADULT_TEST_DATA_PROCESSED_PATH)
+    adult_pre_process_helper(path.ADULT_DATA_PATH, path.ADULT_DATA_PROCESSED_PATH)
+    adult_pre_process_helper(path.ADULT_TEST_DATA_PATH, path.ADULT_TEST_DATA_PROCESSED_PATH)
     pass
 
 def adult_pre_process_helper(path, output_path):
